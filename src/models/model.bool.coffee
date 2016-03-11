@@ -1,0 +1,54 @@
+# Copyright 2015 SpinalCom  www.spinalcom.com
+
+# This file is part of SpinalCore.
+#
+# SpinalCore is licensed under the Free Software License Agreement
+# that you should have received along with this file. If not, see
+# <http://www.spinalcore.com/downloads/license.pdf>.
+
+# false by default
+#
+root = global ? this
+
+class root.Bool extends Obj
+    constructor: ( data ) ->
+        super()
+
+        @_data = false
+
+        # default values
+        if data?
+            @_set data
+    
+    # toggle true / false ( 1 / 0 )
+    toggle: ->
+        @set not @_data
+
+    toBoolean: ->
+        @_data
+
+    #
+    deep_copy: ->
+        new Bool @_data
+
+    # we do not take _set from Obj because we want a conversion if value is not a boolean
+    _set: ( value ) ->
+        if n instanceof Model
+            n = value.toBoolean()
+        else if value == "false"
+            n = false
+        else if value == "true"
+            n = true
+        else
+            n = Boolean value
+
+        if @_data != n
+            @_data = n
+            return true
+
+        return false
+        
+    #
+    _get_fs_data: ( out ) ->
+        FileSystem.set_server_id_if_necessary out, this
+        out.mod += "C #{@_server_id} #{ 1 * Boolean( @_data ) } "

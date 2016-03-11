@@ -1,0 +1,111 @@
+# Copyright 2015 SpinalCom  www.spinalcom.com
+
+# This file is part of SpinalCore.
+#
+# SpinalCore is licensed under the Free Software License Agreement
+# that you should have received along with this file. If not, see
+# <http://www.spinalcore.com/downloads/license.pdf>.
+
+# scalar
+root = global ? this
+
+class root.ModelProcessManager
+    @_counter: 0  # nb "change rounds" since the beginning ( * 2 to differenciate direct and indirect changes )
+    @_modlist: {} # changed models (current round)
+    @_n_processes: {} # new processes (that will need a first onchange call in "force" mode)
+    @_cur_mid: 0 # current model id (used to create new ids)
+    @_cur_process_id: 0 # current process id (used to create new ids)
+    @_timeout: undefined # timer used to create a new "round"
+    @_force_m: false # if _force_m == true, every has_been_modified function will return true
+    @_synchro: undefined # synchronizer (link to the server that will store files)
+
+    # modify state according to str. str can be the result of a previous @get_state
+    @new_from_state: ( str ) ->
+        map = {}
+        lst = str.split "\n"
+        mid = lst.shift()
+        for l in lst when l.length
+            s = l.split " "
+            map[ s[ 0 ] ] =
+                type: s[ 1 ]
+                data: s[ 2 ]
+                buff: undefined
+                
+        # fill / update this with data in map[ mid ]
+        eval "var __new__ = new #{map[ mid ].type};"
+        __new__._set_state map[ mid ].data, map
+        return __new__
+        
+    #
+    @load: ( filename, func ) ->
+        if not ModelProcessManager.synchronizer
+            ModelProcessManager._synchro = new Synchronizer
+        ModelProcessManager._synchro.load filename, func
+        
+        
+    # If v is a Model, return v. Else, return a Model of guessed right type
+    @conv: ( v ) ->
+        if v instanceof Model
+            return v
+        if v instanceof Array
+            return new Lst v
+        if typeof v == "string"
+            return new Str v
+        if typeof v == "number"
+            return new Val v
+        if typeof v == "boolean"
+            return new Bool v
+        if v instanceof Object
+            return new Model v
+        return new Obj v
+
+    # return the type of obj
+    @get_object_class: ( obj ) ->
+        if obj and obj.constructor and obj.constructor.toString
+            arr = obj.constructor.toString().match ///function\s*(\w+)///
+            if arr and arr.length == 2
+                return arr[ 1 ]
+
+    @_get_attribute_names: ( m ) ->
+        if m instanceof Model
+            m._attribute_names
+        else
+            for key, val of m
+                key
+
+    # create a Model using a line of get_state (using .type, .data, ...)
+    @_new_model_from_state: ( mid, map ) ->
+        info = map[ mid ]
+        eval "info.buff = new #{info.type};"
+        info.buff._set_state info.data, map
+        return info.buff
+        
+    # say that something will need a call to ModelProcessManager._sync_processes during the next round
+    @_need_sync_processes: ->
+        if not ModelProcessManager._timeout?
+            ModelProcessManager._timeout = setTimeout ModelProcessManager._sync_processes, 1
+
+    # the function that is called after a very short timeout, when at least one object has been modified
+    @_sync_processes: ->
+        processes = {}
+        for id, model of ModelProcessManager._modlist
+            for process in model._processes
+                processes[ process.process_id ] = 
+                    value: process
+                    force: false
+
+        for id, process of ModelProcessManager._n_processes
+            processes[ id ] =
+                value: process
+                force: true
+
+        ModelProcessManager._timeout = undefined
+        ModelProcessManager._modlist = {}
+        ModelProcessManager._n_processes = {}
+        ModelProcessManager._counter += 2
+
+        for id, process of processes
+            ModelProcessManager._force_m = process.force
+            process.value.onchange()
+                
+        ModelProcessManager._force_m = false
