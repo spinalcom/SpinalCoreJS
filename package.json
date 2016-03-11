@@ -1,10 +1,10 @@
 {
   "name": "spinalcore",
-  "version": "0.1.34",
+  "version": "0.1.35",
   "description": "Fog middleware that enables data virtualization and interoperability for the Internet of Things",
   "repository": {
-    "type" : "git",
-     "url" : "https://github.com/spinalcom/SpinalCoreJS.git"
+    "type": "git",
+    "url": "https://github.com/spinalcom/SpinalCoreJS.git"
   },
   "main": "lib/spinalcore.node.js",
   "scripts": {
