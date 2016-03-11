@@ -4,7 +4,7 @@
 #
 # SpinalCore is licensed under the Free Software License Agreement
 # that you should have received along with this file. If not, see
-# <http://www.spinalcore.com/downloads/license.pdf>.
+# <http://resources.spinalcore.com/license.pdf>.
 
 url = require('url');
 root = global ? this
