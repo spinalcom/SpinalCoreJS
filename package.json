@@ -1,6 +1,6 @@
 {
   "name": "spinalcore",
-  "version": "0.1.33",
+  "version": "0.1.34",
   "description": "Fog middleware that enables data virtualization and interoperability for the Internet of Things",
   "main": "lib/spinalcore.node.js",
   "scripts": {
