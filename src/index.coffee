@@ -31,6 +31,9 @@ class root.spinalCore
         if typeof options == 'string'
             options = url.parse(options)
 
+        if options.path.slice(-1)[0] != "/"
+            options.path += "/"
+
         FileSystem._home_dir = options.path
         FileSystem._url = options.hostname
         FileSystem._port = options.port
@@ -38,22 +41,54 @@ class root.spinalCore
         return new FileSystem
 
     # stores a model in the file system
-    @store: (fs, model, file_name, callback) ->
-        fs.load_or_make_dir FileSystem._home_dir, ( dir, err ) =>
-            file = dir.detect ( x ) -> x.name.get() == file_name
-            if file?
-                dir.remove file
-            dir.add_file file_name, model, model_type: "Test"
-            callback()
+    @store: (fs, model, path, callback_success, callback_error) ->
+        if typeof callback_error == "undefined"
+            callback_error = ->
+                console.log("Model could not be stored. You can pass a callback to handle this error.");
+
+        # Parse path
+        lst = path.split "/"
+        file_name = lst.pop()
+        if lst[0] == ""
+            lst.splice 0, 1
+        path = lst.join "/" # Absolute paths are not allowed
+
+        fs.load_or_make_dir FileSystem._home_dir + path, ( dir, err ) ->
+            if err
+                callback_error()
+            else
+                file = dir.detect ( x ) -> x.name.get() == file_name
+                if file?
+                    dir.remove file
+                dir.add_file file_name, model, model_type: "Model"
+                callback_success()
 
     # loads a model from the file system
-    @load: (fs, file_name, callback) ->
-        fs.load_or_make_dir FileSystem._home_dir, ( current_dir, err ) ->
-            file = current_dir.detect ( x ) -> x.name.get() == file_name
-            if file?
-                console.log "load"
-                file.load ( data, err ) =>
-                    callback(data)
+    @sync: (fs, path, callback_success, callback_error) ->
+        if typeof callback_error == "undefined"
+            callback_error = ->
+                console.log("Model could not be loaded. You can pass a callback to handle this error.");
+
+        # Parse path
+        lst = path.split "/"
+        file_name = lst.pop()
+        if lst[0] == ""
+            lst.splice 0, 1
+        path = lst.join "/" # Absolute paths are not allowed
+
+        fs.load_or_make_dir FileSystem._home_dir + path, ( current_dir, err ) ->
+            if err
+                callback_error()
+            else
+                file = current_dir.detect ( x ) -> x.name.get() == file_name
+                if file?
+                    file.load ( data, err ) =>
+                        if err
+                            callback_error()
+                        else
+                            callback_success data, err
+                else
+                    callback_error()
 
     # "static" method: extend one object as a class, using the same 'class' concept as coffeescript
     @extend: (child, parent) ->
