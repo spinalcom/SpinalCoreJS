@@ -38,7 +38,7 @@ describe('The SpinalCore API', function() {
         });
 
         it('should load a model from the FileSystem', function() {
-            spinalCore.load(conn, "test", function () {});
+            spinalCore.sync(conn, "test", function () {});
 
             expect(conn.load_or_make_dir).toHaveBeenCalled();
         });
