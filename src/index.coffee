@@ -64,7 +64,7 @@ class root.spinalCore
                 callback_success()
 
     # loads a model from the file system
-    @sync: (fs, path, callback_success, callback_error) ->
+    @load: (fs, path, callback_success, callback_error) ->
         if typeof callback_error == "undefined"
             callback_error = ->
                 console.log("Model could not be loaded. You can pass a callback to handle this error.");
