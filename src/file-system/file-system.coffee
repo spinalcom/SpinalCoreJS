@@ -37,7 +37,7 @@ class root.FileSystem
     @_userid = "644"
 
     # TODO: Hardcoded: review this
-    if typeof window == 'undefined'
+    if typeof global != 'undefined'
         XMLHttpRequest_node = require 'xhr2'
         @_XMLHttpRequest = XMLHttpRequest_node
     
@@ -68,7 +68,7 @@ class root.FileSystem
     @url_upload = "/sceen/upload" # 
     
     # conector type : Browser or Node
-    if typeof window == 'undefined'
+    if typeof global != 'undefined'
         @CONNECTOR_TYPE = "Node"
     else
         @CONNECTOR_TYPE = "Browser"
