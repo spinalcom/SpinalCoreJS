@@ -25,7 +25,7 @@
 # List of files
 # _underlying_fs_type is not needed ()
 
-root = global ? this
+root = if typeof _root_obj == "undefined" then global else window
 
 class root.Directory extends Lst
     constructor: () ->

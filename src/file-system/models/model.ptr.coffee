@@ -26,7 +26,7 @@
 #
 #
 
-root = global ? this
+root = if typeof _root_obj == "undefined" then global else window
 
 class root.Ptr extends Model
     # model may be a number (the pointer)

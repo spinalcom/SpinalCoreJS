@@ -23,7 +23,7 @@
 
 #
 
-root = global ? this
+root = if typeof _root_obj == "undefined" then global else window
 
 class root.File extends Model
     constructor: ( name = "", ptr_or_model = 0, info = {} ) ->

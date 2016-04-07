@@ -38,7 +38,8 @@ buildForNode()
 buildForBrowser()
 {
     buildForNode;
-    echo "$($(npm bin)/browserify extras/browser.js)" > lib/spinalcore.browser.js;
+    echo "var _root_obj = this;" > lib/spinalcore.browser.js;
+    echo "$($(npm bin)/browserify --detect-globals false extras/browser.js)" >> lib/spinalcore.browser.js;
 }
 
 # Build SpinalCore for both browser and node

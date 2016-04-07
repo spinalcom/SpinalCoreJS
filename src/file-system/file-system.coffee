@@ -27,7 +27,7 @@
 # 
 #
 
-root = global ? this
+root = if typeof _root_obj == "undefined" then global else window
 
 class root.FileSystem
     # when object are saved, their _server_id is assigned to a tmp value
