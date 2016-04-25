@@ -85,7 +85,7 @@ class root.FileSystem
         
         # first, we need a session id fom the server
         if FileSystem._userid?
-            @send "U #{FileSystem._userid} "
+            @send "U #{FileSystem._userid} #{FileSystem._password} "
         @send "S #{@_num_inst} "
         
     
