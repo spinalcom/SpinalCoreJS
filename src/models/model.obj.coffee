@@ -24,7 +24,7 @@
 
 # generic object with data
 
-root = global ? this
+root = if typeof _root_obj == "undefined" then global else window
 
 class root.Obj extends Model
     constructor: ( data ) ->

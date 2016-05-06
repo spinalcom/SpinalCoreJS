@@ -22,7 +22,7 @@
 # <http://resources.spinalcom.com/licenses.pdf>.
 
 # scalar
-root = global ? this
+root = if typeof _root_obj == "undefined" then global else window
 
 class root.ModelProcessManager
     @_counter: 0  # nb "change rounds" since the beginning ( * 2 to differenciate direct and indirect changes )

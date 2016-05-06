@@ -26,7 +26,7 @@
 # get() will give the value
 # num is the number of the choosen value in the list
 # lst contains the posible choices
-root = global ? this
+root = if typeof _root_obj == "undefined" then global else window
 
 class root.Choice extends Model 
     constructor: ( data, initial_list = [] ) ->

@@ -24,7 +24,7 @@
 
 # contains (privately on the server) a path to data on the server
 
-root = global ? this
+root = if typeof _root_obj == "undefined" then global else window
 
 class root.Path extends Model
     # @file is optionnal. Must be a javascript File object

@@ -21,7 +21,7 @@
 # with this file. If not, see
 # <http://resources.spinalcom.com/licenses.pdf>.
 
-root = global ? this
+root = if typeof _root_obj == "undefined" then global else window
 
 class root.TypedArray extends Model
     # size can be 

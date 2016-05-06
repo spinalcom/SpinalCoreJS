@@ -26,7 +26,7 @@
 # f is the function which has to be binded
 # onchange_construction true means that onchange will be automatically called after after the bind
 
-root = global ? this
+root = if typeof _root_obj == "undefined" then global else window
 
 class root.BindProcess extends Process
     constructor: ( model, onchange_construction, @f ) ->

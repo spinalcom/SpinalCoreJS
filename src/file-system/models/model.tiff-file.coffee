@@ -21,15 +21,18 @@
 # with this file. If not, see
 # <http://resources.spinalcom.com/licenses.pdf>.
 
+#
 root = if typeof _root_obj == "undefined" then global else window
 
-class root.TypedArray_Float32 extends TypedArray
-    constructor: ( size = [], data ) ->
-        super size, data
-        
-    base_type: ->
-        Float32Array
+class root.TiffFile extends File
+    constructor: ( name = "", ptr_or_model = 0, ptr_tiff =0, info = {} ) ->
+        super(name, ptr_or_model, info)
 
-    deep_copy: ->
-        new TypedArray_Float32 @_size, @_data
-    
+        #
+        @add_attr
+            _ptr_tiff : new Ptr ptr_tiff
+            _has_been_converted : 0
+
+
+    load_tiff: ( callback ) ->
+        @_ptr_tiff.load callback

@@ -27,7 +27,7 @@
 # 
 #
 
-root = global ? this
+root = if typeof _root_obj == "undefined" then global else window
 
 class root.FileSystem
     # when object are saved, their _server_id is assigned to a tmp value
@@ -37,7 +37,7 @@ class root.FileSystem
     @_userid = "644"
 
     # TODO: Hardcoded: review this
-    if typeof window == 'undefined'
+    if typeof global != 'undefined'
         XMLHttpRequest_node = require 'xhr2'
         @_XMLHttpRequest = XMLHttpRequest_node
     
@@ -68,7 +68,7 @@ class root.FileSystem
     @url_upload = "/sceen/upload" # 
     
     # conector type : Browser or Node
-    if typeof window == 'undefined'
+    if typeof global != 'undefined'
         @CONNECTOR_TYPE = "Node"
     else
         @CONNECTOR_TYPE = "Browser"
@@ -85,7 +85,7 @@ class root.FileSystem
         
         # first, we need a session id fom the server
         if FileSystem._userid?
-            @send "U #{FileSystem._userid} "
+            @send "U #{FileSystem._userid} #{FileSystem._password} "
         @send "S #{@_num_inst} "
         
     

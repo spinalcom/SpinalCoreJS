@@ -26,7 +26,7 @@
 #
 # Each process has an uniquer id called "process_id"
 
-root = global ? this
+root = if typeof _root_obj == "undefined" then global else window
 
 class root.Process
     
@@ -62,7 +62,7 @@ class root.Process
 
 # bind model or list of model to function or process f
 # (simply call the bind method of Model)
-bind = ( m, f ) =>
+root.bind = ( m, f ) =>
     if m instanceof Model
         m.bind f
     else

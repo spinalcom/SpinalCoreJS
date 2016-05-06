@@ -23,7 +23,7 @@
 
 
 # vector of objects inherited from Model
-root = global ? this
+root = if typeof _root_obj == "undefined" then global else window
 
 class root.Lst extends Model
     constructor: ( data ) ->

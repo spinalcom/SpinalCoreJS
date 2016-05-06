@@ -25,7 +25,7 @@
 # List of files
 # _underlying_fs_type is not needed ()
 
-root = global ? this
+root = if typeof _root_obj == "undefined" then global else window
 
 class root.Directory extends Lst
     constructor: () ->
@@ -60,6 +60,14 @@ class root.Directory extends Lst
         res = new File name, obj, params
         @push res
         return res
+    
+    add_tiff_file: ( name, obj, tiff_obj, params = {} ) ->
+        o = @find name
+        if o?
+            return o
+        res = new TiffFile name, obj, tiff_obj, params
+        @push res
+        return res    
     
     force_add_file: ( name, obj, params = {} ) ->
         num = @length

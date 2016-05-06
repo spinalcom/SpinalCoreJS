@@ -24,7 +24,7 @@
 
 # String
 
-root = global ? this
+root = if typeof _root_obj == "undefined" then global else window
 
 class root.Str extends Obj
     constructor: ( data ) ->

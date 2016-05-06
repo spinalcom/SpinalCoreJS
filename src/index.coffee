@@ -22,7 +22,7 @@
 # <http://resources.spinalcom.com/licenses.pdf>.
 
 url = require('url');
-root = global ? this
+root = if typeof _root_obj == "undefined" then global else window
 
 # Define main API
 class root.spinalCore
@@ -37,7 +37,10 @@ class root.spinalCore
         FileSystem._home_dir = options.path
         FileSystem._url = options.hostname
         FileSystem._port = options.port
-        FileSystem._userid = options.auth
+        auth =  options.auth.split ":"
+        FileSystem._userid = auth[0]
+        if auth.length > 1
+          FileSystem._password = auth[1]
         return new FileSystem
 
     # stores a model in the file system
