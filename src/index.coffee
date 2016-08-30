@@ -37,10 +37,15 @@ class root.spinalCore
         FileSystem._home_dir = options.path
         FileSystem._url = options.hostname
         FileSystem._port = options.port
-        auth =  options.auth.split ":"
-        FileSystem._userid = auth[0]
-        if auth.length > 1
-          FileSystem._password = auth[1]
+        if options.auth != null
+          auth =  options.auth.split ":"
+          FileSystem._userid = auth[0]
+          if auth.length > 1
+            FileSystem._password = auth[1]
+        else
+          # set default user id
+          FileSystem._userid = 644
+          FileSystem._password = ""
         return new FileSystem
 
     # stores a model in the file system
