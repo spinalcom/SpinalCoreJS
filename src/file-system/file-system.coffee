@@ -49,6 +49,8 @@ class root.FileSystem
     # functions to be called after an answer
     @_nb_callbacks = 0
     @_callbacks = {}
+    @_type_callbacks = [] # list of callbacks associated to a type: [ [ "type", function ], ... ]
+    
 
     # instances of FileSystem
     @_nb_insts = 0
@@ -95,6 +97,13 @@ class root.FileSystem
         @send "L #{FileSystem._nb_callbacks} #{encodeURI path} "
         FileSystem._callbacks[ FileSystem._nb_callbacks ] = callback
         FileSystem._nb_callbacks++
+
+    # load all the objects of $type
+    load_type: ( type, callback ) ->
+        FileSystem._send_chan()
+        @send "R 0 #{type} "
+        FileSystem._type_callbacks.push [ type, callback ]
+
 
     # make dir if not already present in the server. Call callback -- as in the @load proc -- when done (i.e. when loaded or created)
     load_or_make_dir: ( dir, callback ) ->
@@ -149,6 +158,10 @@ class root.FileSystem
                     if sid? and obj?
                         obj._server_id = sid
                         FileSystem._objects[ sid ] = obj
+                        for c in FileSystem._type_callbacks
+                            if obj instanceof global[c[0]]
+                                c[1] obj
+                            
                     
                 FileSystem._sig_server = false
                 
@@ -297,6 +310,9 @@ class root.FileSystem
                         if sid? and obj?
                             obj._server_id = sid
                             FileSystem._objects[ sid ] = obj
+                            for c in FileSystem._type_callbacks
+                                if obj instanceof global[c[0]]
+                                    c[1] obj
                     
                     FileSystem._sig_server = false
                     eval @responseText

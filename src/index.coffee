@@ -93,6 +93,18 @@ class root.spinalCore
                 else
                     callback_error()
 
+    # loads all the models of a specific type
+    @load_type: (fs, type, callback_success, callback_error) ->
+        if typeof callback_error == "undefined"
+            callback_error = ->
+                console.log("Model of this type could not be loaded. You can pass a callback to handle this error.");
+                
+        fs.load_type type, ( data, err ) =>
+            if err
+                callback_error()
+            else
+                callback_success data, err            
+
     # "static" method: extend one object as a class, using the same 'class' concept as coffeescript
     @extend: (child, parent) ->
         for key, value of parent
