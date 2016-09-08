@@ -35,6 +35,11 @@ class root.FileSystem
     @_sig_server = true # if changes has to be sent
     @_disp = false
     @_userid = "644"
+    @is_cordova = document.URL.indexOf( 'http://' ) == -1 && document.URL.indexOf( 'https://' ) == -1
+#     if ( @is_cordova )
+#         // PhoneGap application
+#     else
+#         // Web page
 
     # TODO: Hardcoded: review this
     if typeof global != 'undefined'
@@ -142,10 +147,10 @@ class root.FileSystem
     # send a request for a "push" channel
     make_channel: ->  
         path = ""
-        if FileSystem.CONNECTOR_TYPE == "Browser"
-            path =  FileSystem.url_com + "?s=#{@_session_num}"
-        else if FileSystem.CONNECTOR_TYPE == "Node"
+        if FileSystem.CONNECTOR_TYPE == "Node" || FileSystem.is_cordova
             path = "http://" + FileSystem._url + ":" + FileSystem._port + FileSystem.url_com + "?s=#{@_session_num}"
+        else if FileSystem.CONNECTOR_TYPE == "Browser"
+            path =  FileSystem.url_com + "?s=#{@_session_num}"
                    
         xhr_object = FileSystem._my_xml_http_request()
         xhr_object.open 'GET', path, true
@@ -225,10 +230,10 @@ class root.FileSystem
             fs = FileSystem.get_inst()                    
             
             path = ""
-            if FileSystem.CONNECTOR_TYPE == "Browser"
-                path = FileSystem.url_com + "?s=#{fs._session_num}&p=#{tmp._server_id}"
-            else if FileSystem.CONNECTOR_TYPE == "Node"
+            if FileSystem.CONNECTOR_TYPE == "Node" || FileSystem.is_cordova
                 path = "http://" + FileSystem._url + ":" + FileSystem._port + FileSystem.url_com + "?s=#{fs._session_num}&p=#{tmp._server_id}"
+            else if FileSystem.CONNECTOR_TYPE == "Browser"
+                path = FileSystem.url_com + "?s=#{fs._session_num}&p=#{tmp._server_id}"
              
             xhr_object = FileSystem._my_xml_http_request()
             xhr_object.open 'PUT', path, true
@@ -293,10 +298,10 @@ class root.FileSystem
             
             # request
             path = ""
-            if FileSystem.CONNECTOR_TYPE == "Browser"
-                path = FileSystem.url_com
-            else if FileSystem.CONNECTOR_TYPE == "Node"
+            if FileSystem.CONNECTOR_TYPE == "Node" || FileSystem.is_cordova
                 path = "http://" + FileSystem._url + ":" + FileSystem._port + FileSystem.url_com
+            else if FileSystem.CONNECTOR_TYPE == "Browser"
+                path = FileSystem.url_com
              
             xhr_object = FileSystem._my_xml_http_request()
             xhr_object.open 'POST', path, true
