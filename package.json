@@ -1,6 +1,6 @@
 {
   "name": "spinalcore",
-  "version": "2.2.4",
+  "version": "2.2.5",
   "description": "Fog middleware that enables data virtualization and interoperability for the Internet of Things",
   "repository": {
     "type": "git",
