@@ -35,7 +35,10 @@ class root.FileSystem
     @_sig_server = true # if changes has to be sent
     @_disp = false
     @_userid = "644"
-    @is_cordova = document.URL.indexOf( 'http://' ) == -1 && document.URL.indexOf( 'https://' ) == -1
+    if typeof document != "undefined"
+        @is_cordova = document.URL.indexOf( 'http://' ) == -1 && document.URL.indexOf( 'https://' ) == -1
+    else
+        @is_cordova = false;
 #     if ( @is_cordova )
 #         // PhoneGap application
 #     else
