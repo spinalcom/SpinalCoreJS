@@ -102,14 +102,14 @@ class root.SpinalUserManager
   @delete_account_by_admin: (options, username, admin_id, admin_password, success_callback, error_callback = null)->
     # Access: /get_delete_account_by_admin?u=<username>&a=<admin_id>&ap=<adminPassword>
     # admin == 644(root) or 168(admin)
-    get_cmd = '/get_change_user_password_by_admin?u=' + username + '&a=' + admin_id + '&ap=' + admin_password
+    get_cmd = '/get_delete_account_by_admin?u=' + username + '&a=' + admin_id + '&ap=' + admin_password
     @send_xhr(options, get_cmd, (response)->
       if parseInt(response) == -1
-        SpinalUserManager._if_error(error_callback, 'get_change_user_password_by_admin', status)
+        SpinalUserManager._if_error(error_callback, 'get_delete_account_by_admin', status)
       else
         success_callback(response);
     , (status)->
-      SpinalUserManager._if_error(error_callback, 'get_change_user_password_by_admin', status)
+      SpinalUserManager._if_error(error_callback, 'get_delete_account_by_admin', status)
     )
 
   @change_account_rights_by_admin: (options, username, right, admin_id, admin_password, success_callback, error_callback = null)->

@@ -103,12 +103,17 @@ class root.spinalCore
         if typeof callback_error == "undefined"
             callback_error = ->
                 console.log("Model of this type could not be loaded. You can pass a callback to handle this error.");
-                
+
         fs.load_type type, ( data, err ) =>
             if err
                 callback_error()
             else
-                callback_success data, err            
+                callback_success data, err
+
+    @share_model: (fs, ptr, file_name, right_flag, targetName) ->
+        fs.share_model ptr, file_name, right_flag, targetName;
+
+    @right_flag: {AD:1, WR:2, RD:4};
 
     # "static" method: extend one object as a class, using the same 'class' concept as coffeescript
     @extend: (child, parent) ->
