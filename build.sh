@@ -31,7 +31,7 @@ LICENSE_TEXT="/*
 buildForNode()
 {
     echo "${LICENSE_TEXT}" > lib/spinalcore.node.js;
-    cat src/index.coffee src/model-process-manager.coffee src/spinal-user-manager.coffee src/models/model.coffee src/models/model.obj.coffee src/models/model.choice.coffee src/models/model.bool.coffee src/models/model.const* src/models/model.lst.coffee src/models/model.v* src/models/model.str.coffee src/models/model.t* src/file-system/*.coffee src/file-system/models/*.coffee src/processes/p* src/processes/b* | $(npm bin)/coffee -bc --stdio >> lib/spinalcore.node.js
+    cat src/index.coffee src/model-process-manager.coffee src/spinal-user-manager.coffee src/models/model.coffee src/models/model.obj.coffee src/models/model.choice.coffee src/models/model.bool.coffee src/models/model.const* src/models/model.lst.coffee src/models/model.v* src/models/model.str.coffee src/models/model.t* src/models/model.User.coffee src/file-system/*.coffee src/file-system/models/*.coffee src/processes/p* src/processes/b* | $(npm bin)/coffee -bc --stdio >> lib/spinalcore.node.js
 }
 
 # Build SpinalCore for browser from node module

@@ -110,6 +110,18 @@ class root.spinalCore
             else
                 callback_success data, err
 
+    @load_right: (fs, ptr, callback_success, callback_error) ->
+        if typeof callback_error == "undefined"
+            callback_error = ->
+                console.log("Model Right could not be loaded. You can pass a callback to handle this error.");
+
+        fs.load_right ptr, ( data, err ) =>
+            if err
+                callback_error()
+            else
+                callback_success data, err
+
+
     @share_model: (fs, ptr, file_name, right_flag, targetName) ->
         fs.share_model ptr, file_name, right_flag, targetName;
 
