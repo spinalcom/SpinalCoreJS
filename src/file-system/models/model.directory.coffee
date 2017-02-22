@@ -33,7 +33,7 @@ class root.Directory extends Lst
 
     base_type: ->
         File
-    
+
     find: ( name ) ->
         for f in this
             if f.name.equals name
@@ -46,13 +46,13 @@ class root.Directory extends Lst
             f.load callback
         else
             callback undefined, "file does not exist"
-        
+
     has: ( name ) ->
         for f in this
             if f.name.equals name
                 return true
         return false
-    
+
     add_file: ( name, obj, params = {} ) ->
         o = @find name
         if o?
@@ -60,27 +60,27 @@ class root.Directory extends Lst
         res = new File name, obj, params
         @push res
         return res
-    
+
     add_tiff_file: ( name, obj, tiff_obj, params = {} ) ->
         o = @find name
         if o?
             return o
         res = new TiffFile name, obj, tiff_obj, params
         @push res
-        return res    
-    
+        return res
+
     force_add_file: ( name, obj, params = {} ) ->
-        num = @length
-        find_name = true
-        name_file = name + "_" + num
-        while find_name
-            name_file = name + "_" + num
-            o = @find name_file
-            if o?
-                num += 1
-            else
-                break
-        console.log name_file
+        num = 0
+        name_file = name
+        o = @find name_file
+        if o?
+            while true
+                name_file = name + "_" + num
+                o = @find name_file
+                if o?
+                  num += 1
+                else
+                    break
         res = new File name_file, obj, params
         @push res
         return res
