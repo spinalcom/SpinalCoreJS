@@ -78,6 +78,8 @@ class root.ModelProcessManager
     @get_object_class: ( obj ) ->
         if obj and obj.constructor and obj.constructor.toString
             arr = obj.constructor.toString().match ///function\s*(\w+)///
+            if (!arr)
+                arr = obj.constructor.toString().match ///class\s*(\w+)///
             if arr and arr.length == 2
                 return arr[ 1 ]
 
