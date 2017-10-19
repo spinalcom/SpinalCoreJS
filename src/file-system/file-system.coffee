@@ -35,6 +35,7 @@ class root.FileSystem
     @_sig_server = true # if changes has to be sent
     @_disp = false
     @_userid = "644"
+    @_timeout_reconnect = 30000
     if typeof document != "undefined"
         @is_cordova = document.URL.indexOf( 'http://' ) == -1 && document.URL.indexOf( 'https://' ) == -1
     else
@@ -89,7 +90,7 @@ class root.FileSystem
         @_data_to_send    = ""
         @_session_num     = -2 # -1 means that we are waiting for a session id after a first request.
         @_num_inst        = FileSystem._nb_insts++
-
+        @make_channel_error_timer = 0
         # register this in FileSystem instances
         FileSystem._insts[ @_num_inst ] = this
 
@@ -170,24 +171,87 @@ class root.FileSystem
         xhr_object.open 'GET', path, true
         xhr_object.onreadystatechange = ->
             if @readyState == 4 and @status == 200
+                _fs = FileSystem.get_inst()
+                if (_fs.make_channel_error_timer != 0)
+                  _fs.onConnectionError(0)
+                _fs.make_channel_error_timer = 0;
                 if FileSystem._disp
                     console.log "chan ->", @responseText
 
                 _w = ( sid, obj ) ->
-                    if sid? and obj?
-                        obj._server_id = sid
-                        FileSystem._objects[ sid ] = obj
+                    _obj = FileSystem._create_model_by_name obj
+                    if sid? and _obj?
+                        _obj._server_id = sid
+                        FileSystem._objects[ sid ] = _obj
                         for c in FileSystem._type_callbacks
-                            if obj instanceof global[c[0]]
-                                c[1] obj
-
+                            if _obj instanceof global[c[0]]
+                                c[1] _obj
 
                 FileSystem._sig_server = false
 
                 eval @responseText
                 FileSystem._sig_server = true
+            else if @readyState == 4 && @status == 0
+                console.error("Disconnected form the server with request : #{path}.")
+                _fs = FileSystem.get_inst()
+                if (_fs.make_channel_error_timer == 0)
+                  #first disconnect
+                  console.log("Trying to reconnect.")
+                  _fs.make_channel_error_timer = new Date();
+                  setTimeout(_fs.make_channel.bind(_fs), 1000)
+                  _fs.onConnectionError(1)
+                else if (((new Date()) - _fs.make_channel_error_timer) < FileSystem._timeout_reconnect)
+                  # under timeout
+                  setTimeout(_fs.make_channel.bind(_fs), 1000)
+                else # timeout reached
+                  _fs.onConnectionError(2)
+            else if @readyState == 4 && @status == 500
+                FileSystem.get_inst().onConnectionError(3)
+
         xhr_object.send()
 
+
+    # default callback on make_channel error after the timeout disconnected reached
+    # This method can be surcharged.
+    # error_code :
+    # 0 = Error resolved
+    # 1 = 1st disconnection
+    # 2 = disconnection timeout
+    # 3 = Server went down Reinit everything
+    onConnectionError : (error_code)->
+      if (error_code == 0) # Error resolved
+        if FileSystem.CONNECTOR_TYPE == "Browser" || FileSystem.is_cordova
+          setTimeout(()->
+            alert('Reconnected to the server.');
+          , 1);
+          console.log("Reconnected to the server.");
+        else if FileSystem.CONNECTOR_TYPE == "Node"
+          console.log("Reconnected to the server.");
+        else
+          console.log("Reconnected to the server.");
+      else if (error_code == 1) # 1st disconnection
+        if FileSystem.CONNECTOR_TYPE == "Browser" || FileSystem.is_cordova
+          setTimeout(()->
+            alert('Disconnected form the server, trying to reconnect.');
+          , 1);
+          # alert("Disconnected form the server, trying to reconnect.");
+          console.error("Disconnected form the server, trying to reconnect.");
+        else if FileSystem.CONNECTOR_TYPE == "Node"
+          console.error("Disconnected form the server, trying to reconnect.");
+        else
+          console.error("Disconnected form the server, trying to reconnect.");
+      else if error_code == 2 || error_code == 3
+        if FileSystem.CONNECTOR_TYPE == "Browser" || FileSystem.is_cordova
+          setTimeout(()->
+            alert('Disconnected form the server, please refresh the window.');
+          , 1);
+          # alert("Disconnected form the server, please refresh the window.");
+          console.error("Disconnected form the server, please refresh the window.");
+        else if FileSystem.CONNECTOR_TYPE == "Node"
+          console.error("Disconnected form the server.");
+          process.exit();
+        else
+          console.error("Disconnected form the server.");
 
     # get the first running inst
     @get_inst: ->
@@ -254,14 +318,46 @@ class root.FileSystem
             xhr_object.onreadystatechange = ->
                 if @readyState == 4 and @status == 200
                     _w = ( sid, obj ) ->
-                        if sid? and obj?
-                            obj._server_id = sid
-                            FileSystem._objects[ sid ] = obj
+                        _obj = FileSystem._create_model_by_name obj
+                        if sid? and _obj?
+                            _obj._server_id = sid
+                            FileSystem._objects[ sid ] = _obj
 
                     eval @responseText
             xhr_object.send tmp.file
             delete tmp.file
 
+    @_create_model_by_name: (name)->
+      if (typeof name != string)
+        return name; # for old spinalcore version
+      if (typeof root[name] == 'undefined')
+        root[name] =  new Function("return function #{name} (){#{name}.super(this);}")();
+        FileSystem.extend(root[name], Model)
+      return new root[name]()
+
+    @extend: (child, parent) ->
+        for key, value of parent
+            child[key] = value
+
+        ctor = () ->
+            @constructor = child
+            return
+
+        ctor.prototype = parent.prototype
+        child.prototype = new ctor()
+        child.__super__ = parent.prototype
+
+        # using embedded javascript because the word 'super' is reserved
+        `child.super = function () {
+            var args = [];
+           	for (var i=1; i < arguments.length; i++)
+                args[i-1] = arguments[i];
+            child.__super__.constructor.apply(arguments[0], args);
+        }`
+
+        root = global ? window
+        child_name = /^function\s+([\w\$]+)\s*\(/.exec( child.toString() )[ 1 ]
+        root[child_name] = child
 
     @_get_new_tmp_server_id: ->
         FileSystem._cur_tmp_server_id++
@@ -326,12 +422,13 @@ class root.FileSystem
 
                     _c = [] # callbacks
                     _w = ( sid, obj ) ->
-                        if sid? and obj?
-                            obj._server_id = sid
-                            FileSystem._objects[ sid ] = obj
+                        _obj = FileSystem._create_model_by_name obj
+                        if sid? and _obj?
+                            _obj._server_id = sid
+                            FileSystem._objects[ sid ] = _obj
                             for c in FileSystem._type_callbacks
-                                if obj instanceof global[c[0]]
-                                    c[1] obj
+                                if _obj instanceof global[c[0]]
+                                    c[1] _obj
 
                     FileSystem._sig_server = false
                     eval @responseText

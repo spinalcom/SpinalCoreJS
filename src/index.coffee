@@ -148,7 +148,7 @@ class root.spinalCore
             child.__super__.constructor.apply(arguments[0], args);
         }`
 
-        root = global ? this
+        root = global ? window
         child_name = /^function\s+([\w\$]+)\s*\(/.exec( child.toString() )[ 1 ]
         root[child_name] = child
 
