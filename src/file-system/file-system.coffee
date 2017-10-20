@@ -31,6 +31,7 @@ root = if typeof _root_obj == "undefined" then global else window
 
 class root.FileSystem
     # when object are saved, their _server_id is assigned to a tmp value
+    @popup = 0
     @_cur_tmp_server_id = 0
     @_sig_server = true # if changes has to be sent
     @_disp = false
@@ -219,39 +220,55 @@ class root.FileSystem
     # 2 = disconnection timeout
     # 3 = Server went down Reinit everything
     onConnectionError : (error_code)->
+      msg = ""
       if (error_code == 0) # Error resolved
         if FileSystem.CONNECTOR_TYPE == "Browser" || FileSystem.is_cordova
-          setTimeout(()->
-            alert('Reconnected to the server.');
-          , 1);
-          console.log("Reconnected to the server.");
-        else if FileSystem.CONNECTOR_TYPE == "Node"
-          console.log("Reconnected to the server.");
+          # msg = "Reconnected to the server."
+          FileSystem.popup.hide();
         else
           console.log("Reconnected to the server.");
       else if (error_code == 1) # 1st disconnection
         if FileSystem.CONNECTOR_TYPE == "Browser" || FileSystem.is_cordova
-          setTimeout(()->
-            alert('Disconnected form the server, trying to reconnect.');
-          , 1);
-          # alert("Disconnected form the server, trying to reconnect.");
-          console.error("Disconnected form the server, trying to reconnect.");
-        else if FileSystem.CONNECTOR_TYPE == "Node"
-          console.error("Disconnected form the server, trying to reconnect.");
+          # document.getElementsByTagName("BODY")[0].appendChild(new_alert_msg("Disconnected form the server, trying to reconnect."));
+          msg = "Disconnected form the server, trying to reconnect...";
+        # else if FileSystem.CONNECTOR_TYPE == "Node"
+        #   console.error("Disconnected form the server, trying to reconnect.");
         else
-          console.error("Disconnected form the server, trying to reconnect.");
+          console.error("Disconnected form the server, trying to reconnect...");
       else if error_code == 2 || error_code == 3
         if FileSystem.CONNECTOR_TYPE == "Browser" || FileSystem.is_cordova
-          setTimeout(()->
-            alert('Disconnected form the server, please refresh the window.');
-          , 1);
-          # alert("Disconnected form the server, please refresh the window.");
-          console.error("Disconnected form the server, please refresh the window.");
+          # document.getElementsByTagName("BODY")[0].appendChild(new_alert_msg("Disconnected form the server, please refresh the window."));
+          msg = "Disconnected form the server, please refresh the window.";
         else if FileSystem.CONNECTOR_TYPE == "Node"
           console.error("Disconnected form the server.");
           process.exit();
         else
           console.error("Disconnected form the server.");
+
+      if msg != ""
+        if FileSystem.popup == 0
+          FileSystem.popup = new new_alert_msg(
+            parent : document.getElementsByTagName("BODY")[0]
+            msg: msg
+            btn : [
+                txt: 'reload page'
+                click : window.location.reload.bind(window.location)
+                backgroundColor: '#ff5b57'
+              ,
+                txt : 'close'
+                backgroundColor: '#348fe2'
+                click : ()->
+                  FileSystem.popup.hide()
+            ]
+          );
+        else
+          FileSystem.popup.show();
+        if (error_code == 2 || error_code == 3)
+          FileSystem.popup.show_btn();
+        else
+          FileSystem.popup.hide_btn();
+        FileSystem.popup.setMsg(msg);
+
 
     # get the first running inst
     @get_inst: ->
@@ -328,7 +345,7 @@ class root.FileSystem
             delete tmp.file
 
     @_create_model_by_name: (name)->
-      if (typeof name != string)
+      if (typeof name != "string")
         return name; # for old spinalcore version
       if (typeof root[name] == 'undefined')
         root[name] =  new Function("return function #{name} (){#{name}.super(this);}")();
