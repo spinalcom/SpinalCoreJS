@@ -219,6 +219,7 @@ class root.FileSystem
     # 1 = 1st disconnection
     # 2 = disconnection timeout
     # 3 = Server went down Reinit everything
+    # 4 = Server down on connection
     onConnectionError : (error_code)->
       msg = ""
       if (error_code == 0) # Error resolved
@@ -235,7 +236,7 @@ class root.FileSystem
         #   console.error("Disconnected form the server, trying to reconnect.");
         else
           console.error("Disconnected form the server, trying to reconnect...");
-      else if error_code == 2 || error_code == 3
+      else if error_code == 2 || error_code == 3 ||  error_code == 4
         if FileSystem.CONNECTOR_TYPE == "Browser" || FileSystem.is_cordova
           # document.getElementsByTagName("BODY")[0].appendChild(new_alert_msg("Disconnected form the server, please refresh the window."));
           msg = "Disconnected form the server, please refresh the window.";
@@ -263,7 +264,7 @@ class root.FileSystem
           );
         else
           FileSystem.popup.show();
-        if (error_code == 2 || error_code == 3)
+        if (error_code == 2 || error_code == 3 || error_code == 4)
           FileSystem.popup.show_btn();
         else
           FileSystem.popup.hide_btn();
@@ -453,6 +454,8 @@ class root.FileSystem
 
                     for c in _c
                         FileSystem._callbacks[ c[ 0 ] ] FileSystem._objects[ c[ 1 ] ], c[ 2 ]
+                else if @readyState == 4 && (@status == 0 || @status == 500)
+                  FileSystem.get_inst().onConnectionError(4)
 
             if FileSystem._disp
                 console.log "sent ->", f._data_to_send + "E "
