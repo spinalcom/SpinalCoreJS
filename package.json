@@ -21,7 +21,6 @@
     "jasmine-ajax": "^3.2.0"
   },
   "dependencies": {
-    "spinal-core-hub": "git+https://github.com/spinalcom/spinal-core-hub.git",
     "xhr2": "^0.1.3"
   }
 }
