@@ -145,14 +145,14 @@ class root.FileSystem
 
     load_right: ( ptr, callback ) ->
         FileSystem._send_chan()
-        @send "gR #{ptr} #{FileSystem._nb_callbacks} "
+        @send "r #{ptr} #{FileSystem._nb_callbacks} "
         FileSystem._callbacks[ FileSystem._nb_callbacks ] = callback
         FileSystem._nb_callbacks++
 
 
     share_model: ( ptr, file_name, share_type, targetName ) ->
         FileSystem._send_chan()
-        @send "sh #{ptr._server_id} #{share_type} #{encodeURI targetName} #{encodeURI file_name} "
+        @send "h #{ptr._server_id} #{share_type} #{encodeURI targetName} #{encodeURI file_name} "
 
     # explicitly send a command
     send: ( data ) ->
@@ -344,6 +344,8 @@ class root.FileSystem
                     eval @responseText
             xhr_object.send tmp.file
             delete tmp.file
+
+        FileSystem.signal_change(FileSystem._objects[ res ])
 
     @_create_model_by_name: (name)->
       if (typeof name != "string")
