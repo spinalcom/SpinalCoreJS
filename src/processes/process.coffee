@@ -62,7 +62,7 @@ class root.Process
 
 # bind model or list of model to function or process f
 # (simply call the bind method of Model)
-root.bind = ( m, f ) =>
+root.bind = ( m, f ) ->
     if m instanceof Model
         m.bind f
     else

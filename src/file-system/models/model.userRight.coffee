@@ -28,5 +28,5 @@ class root.UserRight extends Model
     constructor: ( ) ->
         super()
 
-    set: ()->
+    set: () ->
       console.log "Set a UserRight is not allowed."

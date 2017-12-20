@@ -74,7 +74,7 @@ class root.Str extends Obj
     _set: ( value ) ->
        
         if not value?
-            return @_set "" 
+            return @_set ""
         n = value.toString()
         if @_data != n
             @_data = n

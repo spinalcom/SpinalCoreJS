@@ -29,7 +29,6 @@ class root.File extends Model
     constructor: ( name = "", ptr_or_model = 0, info = {} ) ->
         super()
 
-        # 
         cp_info = {}
         for key, val of info
             cp_info[ key ] = val
@@ -39,20 +38,19 @@ class root.File extends Model
                 cp_info.model_type = ModelProcessManager.get_object_class ptr_or_model
             ptr_or_model.get_file_info? cp_info
 
-        #
-        @add_attr
-            name : name
-            admins : new Lst
-            users : new Lst
-            _created_at : new Date()
-            _ptr : new Ptr ptr_or_model
+        @add_attr {
+            name: name
+            admins: new Lst
+            users: new Lst
+            _created_at: new Date()
+            _ptr: new Ptr ptr_or_model
             _info: cp_info
-                # -> img : "data/base64...."
+                # -> img: "data/base64...."
                 # -> icon: "toto"
                 # -> model_type: "Directory"...
                 # -> remaining
                 # -> to_upload
-
+        }
     load: ( callback ) ->
         @_ptr.load callback
     
@@ -63,16 +61,16 @@ class root.File extends Model
 #         evt.stopPropagation()
 #         evt.preventDefault()
 #         return false
-#         
-#     handleFiles: (event, info, files) -> 
+#
+#     handleFiles: (event, info, files) ->
 #         if typeof files == "undefined" #Drag and drop
 #             event.stopPropagation()
 #             event.returnValue = false
 #             event.preventDefault()
 #             files = event.dataTransfer.files
-#             
+#
 #         if event.dataTransfer.files.length > 0
-#             for file in files 
+#             for file in files
 #                 format = file.type.indexOf "image"
 #                 if format isnt -1
 #                     pic = new ImgItem file.name
@@ -80,8 +78,8 @@ class root.File extends Model
 #                     if accept_child == true
 #                         info.item.add_child pic
 #                         info.item.img_collection.push pic
-#                         
+#
 #             @sendFiles()
-# TreeView.default_types.push ( evt, info ) -> 
+# TreeView.default_types.push ( evt, info ) ->
 #     d = new Directory
 #     d.drop evt, info

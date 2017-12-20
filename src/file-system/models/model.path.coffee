@@ -36,10 +36,10 @@ class root.Path extends Model
         else
             0
         
-        @add_attr
+        @add_attr {
             remaining: size
             to_upload: size
-
+        }
     get_file_info: ( info ) ->
         info.remaining = @remaining
         info.to_upload = @to_upload

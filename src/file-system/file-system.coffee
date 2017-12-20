@@ -38,9 +38,10 @@ class root.FileSystem
     @_userid = "644"
     @_timeout_reconnect = 30000
     if typeof document != "undefined"
-        @is_cordova = document.URL.indexOf( 'http://' ) == -1 && document.URL.indexOf( 'https://' ) == -1
+        @is_cordova = document.URL.indexOf( 'http://' ) == -1 &&
+         document.URL.indexOf( 'https://' ) == -1
     else
-        @is_cordova = false;
+        @is_cordova = false
 #     if ( @is_cordova )
 #         // PhoneGap application
 #     else
@@ -89,7 +90,8 @@ class root.FileSystem
     constructor: ->
         # default values
         @_data_to_send    = ""
-        @_session_num     = -2 # -1 means that we are waiting for a session id after a first request.
+        # -1 means that we are waiting for a session id after a first request.
+        @_session_num     = -2
         @_num_inst        = FileSystem._nb_insts++
         @make_channel_error_timer = 0
         # register this in FileSystem instances
@@ -115,7 +117,8 @@ class root.FileSystem
         FileSystem._type_callbacks.push [ type, callback ]
 
 
-    # make dir if not already present in the server. Call callback -- as in the @load proc -- when done (i.e. when loaded or created)
+    # make dir if not already present in the server. Call callback
+    # as in the @load proc -- when done (i.e. when loaded or created)
     load_or_make_dir: ( dir, callback ) ->
         @load dir, ( res, err ) =>
             if err
@@ -125,7 +128,7 @@ class root.FileSystem
                     lst = ( v for v in dir.split '/' when v.length )
                     nir = lst.pop()
                     oir = "/" + lst.join( "/" )
-                    @load_or_make_dir oir, ( n_res, n_err ) =>
+                    @load_or_make_dir oir, ( n_res, n_err ) ->
                         if n_err
                             callback 0, n_err
                         else
@@ -164,7 +167,8 @@ class root.FileSystem
     make_channel: ->
         path = ""
         if FileSystem.CONNECTOR_TYPE == "Node" || FileSystem.is_cordova
-            path = "http://" + FileSystem._url + ":" + FileSystem._port + FileSystem.url_com + "?s=#{@_session_num}"
+            path = "http://" + FileSystem._url + ":" +
+              FileSystem._port + FileSystem.url_com + "?s=#{@_session_num}"
         else if FileSystem.CONNECTOR_TYPE == "Browser"
             path =  FileSystem.url_com + "?s=#{@_session_num}"
 
@@ -175,7 +179,7 @@ class root.FileSystem
                 _fs = FileSystem.get_inst()
                 if (_fs.make_channel_error_timer != 0)
                   _fs.onConnectionError(0)
-                _fs.make_channel_error_timer = 0;
+                _fs.make_channel_error_timer = 0
                 if FileSystem._disp
                     console.log "chan ->", @responseText
 
@@ -198,10 +202,11 @@ class root.FileSystem
                 if (_fs.make_channel_error_timer == 0)
                   #first disconnect
                   console.log("Trying to reconnect.")
-                  _fs.make_channel_error_timer = new Date();
+                  _fs.make_channel_error_timer = new Date()
                   setTimeout(_fs.make_channel.bind(_fs), 1000)
                   _fs.onConnectionError(1)
-                else if (((new Date()) - _fs.make_channel_error_timer) < FileSystem._timeout_reconnect)
+                else if (((new Date()) - _fs.make_channel_error_timer) <
+                 FileSystem._timeout_reconnect)
                   # under timeout
                   setTimeout(_fs.make_channel.bind(_fs), 1000)
                 else # timeout reached
@@ -220,55 +225,50 @@ class root.FileSystem
     # 2 = disconnection timeout
     # 3 = Server went down Reinit everything
     # 4 = Server down on connection
-    onConnectionError : (error_code)->
+    onConnectionError: (error_code) ->
       msg = ""
       if (error_code == 0) # Error resolved
         if FileSystem.CONNECTOR_TYPE == "Browser" || FileSystem.is_cordova
-          # msg = "Reconnected to the server."
-          FileSystem.popup.hide();
+          FileSystem.popup.hide()
         else
-          console.log("Reconnected to the server.");
+          console.log("Reconnected to the server.")
       else if (error_code == 1) # 1st disconnection
         if FileSystem.CONNECTOR_TYPE == "Browser" || FileSystem.is_cordova
-          # document.getElementsByTagName("BODY")[0].appendChild(new_alert_msg("Disconnected form the server, trying to reconnect."));
-          msg = "Disconnected form the server, trying to reconnect...";
-        # else if FileSystem.CONNECTOR_TYPE == "Node"
-        #   console.error("Disconnected form the server, trying to reconnect.");
+          msg = "Disconnected form the server, trying to reconnect..."
         else
-          console.error("Disconnected form the server, trying to reconnect...");
+          console.error("Disconnected form the server, trying to reconnect...")
       else if error_code == 2 || error_code == 3 ||  error_code == 4
         if FileSystem.CONNECTOR_TYPE == "Browser" || FileSystem.is_cordova
-          # document.getElementsByTagName("BODY")[0].appendChild(new_alert_msg("Disconnected form the server, please refresh the window."));
-          msg = "Disconnected form the server, please refresh the window.";
+          msg = "Disconnected form the server, please refresh the window."
         else if FileSystem.CONNECTOR_TYPE == "Node"
-          console.error("Disconnected form the server.");
-          process.exit();
+          console.error("Disconnected form the server.")
+          process.exit()
         else
-          console.error("Disconnected form the server.");
+          console.error("Disconnected form the server.")
 
       if msg != ""
         if FileSystem.popup == 0
-          FileSystem.popup = new new_alert_msg(
-            parent : document.getElementsByTagName("BODY")[0]
+          FileSystem.popup = new new_alert_msg({
+            parent: document.getElementsByTagName("BODY")[0]
             msg: msg
-            btn : [
+            btn: [{
                 txt: 'reload page'
-                click : window.location.reload.bind(window.location)
+                click: window.location.reload.bind(window.location)
                 backgroundColor: '#ff5b57'
-              ,
-                txt : 'close'
+              }, {
+                txt: 'close',
                 backgroundColor: '#348fe2'
-                click : ()->
+                click: () ->
                   FileSystem.popup.hide()
-            ]
-          );
+            }]
+          })
         else
-          FileSystem.popup.show();
+          FileSystem.popup.show()
         if (error_code == 2 || error_code == 3 || error_code == 4)
-          FileSystem.popup.show_btn();
+          FileSystem.popup.show_btn()
         else
-          FileSystem.popup.hide_btn();
-        FileSystem.popup.setMsg(msg);
+          FileSystem.popup.hide_btn()
+        FileSystem.popup.setMsg(msg)
 
 
     # get the first running inst
@@ -327,7 +327,8 @@ class root.FileSystem
 
             path = ""
             if FileSystem.CONNECTOR_TYPE == "Node" || FileSystem.is_cordova
-                path = "http://" + FileSystem._url + ":" + FileSystem._port + FileSystem.url_com + "?s=#{fs._session_num}&p=#{tmp._server_id}"
+                path = "http://" + FileSystem._url + ":" + FileSystem._port +
+                  FileSystem.url_com + "?s=#{fs._session_num}&p=#{tmp._server_id}"
             else if FileSystem.CONNECTOR_TYPE == "Browser"
                 path = FileSystem.url_com + "?s=#{fs._session_num}&p=#{tmp._server_id}"
 
@@ -347,11 +348,11 @@ class root.FileSystem
 
         FileSystem.signal_change(FileSystem._objects[ res ])
 
-    @_create_model_by_name: (name)->
+    @_create_model_by_name: (name) ->
       if (typeof name != "string")
         return name; # for old spinalcore version
       if (typeof root[name] == 'undefined')
-        root[name] =  new Function("return function #{name} (){#{name}.super(this);}")();
+        root[name] =  new Function("return function #{name} (){#{name}.super(this);}")()
         FileSystem.extend(root[name], Model)
       return new root[name]()
 
@@ -461,7 +462,7 @@ class root.FileSystem
 
             if FileSystem._disp
                 console.log "sent ->", f._data_to_send + "E "
-            xhr_object.setRequestHeader('Content-Type','text/plain')
+            xhr_object.setRequestHeader('Content-Type', 'text/plain')
             xhr_object.send f._data_to_send + "E "
             #console.log "-> ", f._data_to_send
             f._data_to_send = ""

@@ -25,14 +25,14 @@
 root = if typeof _root_obj == "undefined" then global else window
 
 class root.TiffFile extends File
-    constructor: ( name = "", ptr_or_model = 0, ptr_tiff =0, info = {} ) ->
+    constructor: ( name = "", ptr_or_model = 0, ptr_tiff = 0, info = {} ) ->
         super(name, ptr_or_model, info)
 
         #
-        @add_attr
-            _ptr_tiff : new Ptr ptr_tiff
-            _has_been_converted : 0
-
+        @add_attr {
+            _ptr_tiff: new Ptr ptr_tiff
+            _has_been_converted: 0
+        }
 
     load_tiff: ( callback ) ->
         @_ptr_tiff.load callback

@@ -57,15 +57,15 @@ class root.Ptr extends Model
     _set: ( model ) ->
         if typeof model == "number"
             res = @data.value != model
-            @data =
-                value: model
+            @data = { value: model }
             return res
             
         if model instanceof Model
             res = @data.value != model._server_id
-            @data =
+            @data = {
                 model: model
                 value: model._server_id
+            }
             return res
                 
         return false

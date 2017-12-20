@@ -92,7 +92,7 @@ class root.TypedArray extends Model
             return @_data == obj._data
         return @_data == obj
 
-    get: ( index )->
+    get: ( index ) ->
         if index?
             @_data[ @_get_index index ]
         else

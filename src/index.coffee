@@ -21,7 +21,7 @@
 # with this file. If not, see
 # <http://resources.spinalcom.com/licenses.pdf>.
 
-url = require('url');
+url = require('url')
 root = if typeof _root_obj == "undefined" then global else window
 
 # Define main API
@@ -51,8 +51,8 @@ class root.spinalCore
     # stores a model in the file system
     @store: (fs, model, path, callback_success, callback_error) ->
         if typeof callback_error == "undefined"
-            callback_error = ->
-                console.log("Model could not be stored. You can pass a callback to handle this error.");
+          callback_error = ->
+            console.log("Model could not be stored. You can pass a callback to handle this error.")
 
         # Parse path
         lst = path.split "/"
@@ -68,14 +68,14 @@ class root.spinalCore
                 file = dir.detect ( x ) -> x.name.get() == file_name
                 if file?
                     dir.remove file
-                dir.add_file file_name, model, model_type: "Model"
+                dir.add_file file_name, model, { model_type: "Model" }
                 callback_success()
 
     # loads a model from the file system
     @load: (fs, path, callback_success, callback_error) ->
         if typeof callback_error == "undefined"
-            callback_error = ->
-                console.log("Model could not be loaded. You can pass a callback to handle this error.");
+          callback_error = ->
+            console.log("Model could not be loaded. You can pass a callback to handle this error.")
 
         # Parse path
         lst = path.split "/"
@@ -90,7 +90,7 @@ class root.spinalCore
             else
                 file = current_dir.detect ( x ) -> x.name.get() == file_name
                 if file?
-                    file.load ( data, err ) =>
+                    file.load ( data, err ) ->
                         if err
                             callback_error()
                         else
@@ -101,10 +101,11 @@ class root.spinalCore
     # loads all the models of a specific type
     @load_type: (fs, type, callback_success, callback_error) ->
         if typeof callback_error == "undefined"
-            callback_error = ->
-                console.log("Model of this type could not be loaded. You can pass a callback to handle this error.");
+          callback_error = ->
+            console.log("Model of this type could not be loaded. " +
+             "You can pass a callback to handle this error.")
 
-        fs.load_type type, ( data, err ) =>
+        fs.load_type type, ( data, err ) ->
             if err
                 callback_error()
             else
@@ -113,9 +114,10 @@ class root.spinalCore
     @load_right: (fs, ptr, callback_success, callback_error) ->
         if typeof callback_error == "undefined"
             callback_error = ->
-                console.log("Model Right could not be loaded. You can pass a callback to handle this error.");
+                console.log("Model Right could not be loaded."+
+                 " You can pass a callback to handle this error.")
 
-        fs.load_right ptr, ( data, err ) =>
+        fs.load_right ptr, ( data, err ) ->
             if err
                 callback_error()
             else
@@ -123,9 +125,9 @@ class root.spinalCore
 
 
     @share_model: (fs, ptr, file_name, right_flag, targetName) ->
-        fs.share_model ptr, file_name, right_flag, targetName;
+        fs.share_model ptr, file_name, right_flag, targetName
 
-    @right_flag: {AD:1, WR:2, RD:4};
+    @right_flag: { AD: 1, WR: 2, RD: 4 }
 
     # "static" method: extend one object as a class, using the same 'class' concept as coffeescript
     @extend: (child, parent) ->

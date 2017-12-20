@@ -33,12 +33,13 @@ class root.Model
         ModelProcessManager._cur_mid += 1
 
         # synchronized processes
-        @_processes = [] 
+        @_processes = []
         
         # parent models (depending on this)
-        @_parents = [] 
+        @_parents = []
         
-        # "date" of previous change. We start at + 2 because we consider that an initialisation is a modification.
+        # "date" of previous change. We start at + 2 because
+        # we consider that an initialisation is a modification.
         @_date_last_modification = ModelProcessManager._counter + 2
 
         # init
@@ -51,7 +52,8 @@ class root.Model
     has_been_modified: ->
         @_date_last_modification > ModelProcessManager._counter - 2 or ModelProcessManager._force_m
         
-    # return true if this has changed since previous synchronisation due to a direct modification (not from a child one)
+    # return true if this has changed since previous synchronisation due to
+    #  a direct modification (not from a child one)
     has_been_directly_modified: ->
         @_date_last_modification > ModelProcessManager._counter - 1 or ModelProcessManager._force_m
 
@@ -74,7 +76,6 @@ class root.Model
             new BindProcess this, onchange_construction, f
 
     #  ...
-    # 
     unbind: ( f ) ->
         if f instanceof Process
             @_processes.splice @_processes.indexOf( f ), 1
@@ -85,8 +86,10 @@ class root.Model
         
 
     # return a copy of data in a "standard" representation (e.g. string, number, objects, ...)
-    # users are encouraged to use Models as much as possible (meaning that get should not be called for every manipulation),
-    # adding methods for manipulation of data if necessary (e.g. toggle, find, ... in Lst, Str, ...).
+    # users are encouraged to use Models as much as possible
+    # (meaning that get should not be called for every manipulation),
+    # adding methods for manipulation of data if necessary
+    # (e.g. toggle, find, ... in Lst, Str, ...).
     #
     # May be redefined for specific types (e.g. Str, Lst, ...)
     get: ->
@@ -95,7 +98,8 @@ class root.Model
             res[ name ] = this[ name ].get()
         return res
 
-    # modify data, using another values, or Model instances. Should not be redefined (but _set should be)
+    # modify data, using another values, or Model instances.
+    # Should not be redefined (but _set should be)
     # returns true if object os modified
     set: ( value ) ->
         if @_set value # change internal data
@@ -110,10 +114,11 @@ class root.Model
         mid = lst.shift()
         for l in lst when l.length
             s = l.split " "
-            map[ s[ 0 ] ] =
+            map[ s[ 0 ] ] = {
                 type: s[ 1 ]
                 data: s[ 2 ]
                 buff: undefined
+            }
                 
         # fill / update this with data in map[ mid ]
         map[ mid ].buff = this
@@ -128,7 +133,8 @@ class root.Model
         res = @model_id.toString()
         if @_date_last_modification > date
             for id, obj of fmm
-                res += "\n" + obj.model_id + " " + ModelProcessManager.get_object_class( obj ) + " " + obj._get_state()
+                res += "\n" + obj.model_id + " " +
+                 ModelProcessManager.get_object_class( obj ) + " " + obj._get_state()
         return res
             
 
@@ -143,7 +149,8 @@ class root.Model
                 this[ n ] = p
             else
                 if this[ n ]?
-                    console.error "attribute #{n} already exists in #{ModelProcessManager.get_object_class this}"
+                    console.error "attribute #{n} already exists in " +
+                     "#{ModelProcessManager.get_object_class this}"
                 p = ModelProcessManager.conv p
                 
                 if this not in p._parents
@@ -185,7 +192,8 @@ class root.Model
             @rem_attr n
             @add_attr n, p
             
-    # add / mod / rem attr to get the same data than o (assumed to be something like { key: val, ... })
+    # add / mod / rem attr to get the same data than o
+    #  (assumed to be something like { key: val, ... })
     set_attr: ( o ) ->
         # new ones / updates
         for k, v of o
@@ -195,7 +203,8 @@ class root.Model
         for r in to_rem
             @rem_attr r
 
-    # dimension of the object -> [] for a scalar, [ length ] for a vector, [ nb_row, nb_cols ] for a matrix...
+    # dimension of the object -> [] for a scalar, [ length ] for a vector,
+    #  [ nb_row, nb_cols ] for a matrix...
     size: ( for_display = false ) ->
         []
 
@@ -294,7 +303,8 @@ class root.Model
 
         return change
         
-    # called by set. change_level should not be defined by the user (it permits to != change from child of from this)
+    # called by set. change_level should not be defined by the user
+    #  (it permits to != change from child of from this)
     _signal_change: ( change_level = 2 ) ->
         #
         if change_level == 2 and @_server_id?
@@ -328,7 +338,7 @@ class root.Model
                         @add_attr attr, map[ k_id ].buff
                     else if map[ k_id ].buff != this[ attr ]
                         @mod_attr attr, map[ k_id ].buff
-                # else, if the attribute does not exist, we create if 
+                # else, if the attribute does not exist, we create if
                 else if not this[ attr ]?
                     @add_attr attr, ModelProcessManager._new_model_from_state k_id, map
                 # else, we already have an attribute and map has not been already explored
