@@ -189,7 +189,7 @@ class root.FileSystem
                         _obj._server_id = sid
                         FileSystem._objects[ sid ] = _obj
                         for c in FileSystem._type_callbacks
-                            if _obj instanceof global[c[0]]
+                            if _obj instanceof root[c[0]]
                                 c[1] _obj
 
                 FileSystem._sig_server = false
@@ -448,7 +448,7 @@ class root.FileSystem
                             _obj._server_id = sid
                             FileSystem._objects[ sid ] = _obj
                             for c in FileSystem._type_callbacks
-                                if _obj instanceof global[c[0]]
+                                if _obj instanceof root[c[0]]
                                     c[1] _obj
 
                     FileSystem._sig_server = false
