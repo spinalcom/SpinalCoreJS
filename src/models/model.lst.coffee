@@ -141,7 +141,7 @@ class root.Lst extends Model
         @[ 0 ] = element
         @length += 1
         
-        @_signal_change()        
+        @_signal_change()
         return @length
         
         
@@ -183,7 +183,7 @@ class root.Lst extends Model
             new_array.push it
             
         #sort array
-        new_array.sort fun_sort    
+        new_array.sort fun_sort
         
         return new_array
 
@@ -194,7 +194,7 @@ class root.Lst extends Model
                 return true
         return false
 
-    # returns index of v if v is present in the list. Else, return -1        
+    # returns index of v if v is present in the list. Else, return -1
     indexOf: ( v ) ->
         for i in [ 0 ... @length ]
             if @[ i ].equals v
@@ -259,11 +259,11 @@ class root.Lst extends Model
         if @_static_size_check false
             return
 
-        for i in [ index ... Math.min( index + n, @length ) ] 
+        for i in [ index ... Math.min( index + n, @length ) ]
             @rem_attr i
-        for i in [ index ... @length - n ] 
+        for i in [ index ... @length - n ]
             @[ i ] = @[ i + n ]
-        for i in [ @length - n ... @length ] 
+        for i in [ @length - n ... @length ]
             delete @[ i ]
         @length -= n
         
@@ -323,7 +323,8 @@ class root.Lst extends Model
         
         s = @static_length()
         if s >= 0 and change
-            console.error "resizing a static array (type #{ModelProcessManager.get_object_class this}) is forbidden"
+            console.error "resizing a static array (type " +
+             "#{ModelProcessManager.get_object_class this}) is forbidden"
             
         for p in [ 0 ... value.length ]
             if p < @length
@@ -383,6 +384,7 @@ class root.Lst extends Model
 
     _static_size_check: ( force ) ->
         if @static_length() >= 0 and not force
-            console.error "resizing a static array (type #{ModelProcessManager.get_object_class this}) is forbidden"
+            console.error "resizing a static array (type " +
+             "#{ModelProcessManager.get_object_class this}) is forbidden"
             return true
         return false

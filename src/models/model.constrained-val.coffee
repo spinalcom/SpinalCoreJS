@@ -31,12 +31,14 @@ class root.ConstrainedVal extends Model
     constructor: ( value, params = {} ) ->
         super()
 
-        @add_attr
-            val : value or 0
+        @add_attr {
+            val: value or 0
             _min: if params.min? then params.min else 0
             _max: if params.max? then params.max else 100
-        @add_attr
+        }
+        @add_attr {
             _div: if params.div? then params.div else (@_max - @_min)
+        }
 
     get: ->
         @val.get()
@@ -47,7 +49,7 @@ class root.ConstrainedVal extends Model
     delta: ->
         @_max.get() - @_min.get()
         
-    set_params: (params)->
+    set_params: (params) ->
         @_min.set if params.min? then params.min else 0
         @_max.set if params.max? then params.max else 100
         @_div.set if params.div? then params.div else (@_max - @_min)

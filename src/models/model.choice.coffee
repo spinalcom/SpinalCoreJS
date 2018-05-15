@@ -28,14 +28,15 @@
 # lst contains the posible choices
 root = if typeof _root_obj == "undefined" then global else window
 
-class root.Choice extends Model 
+class root.Choice extends Model
     constructor: ( data, initial_list = [] ) ->
         super()
         
         # default
-        @add_attr
+        @add_attr {
             num: 0
             lst: initial_list
+        }
         
         # init
         if data?

@@ -28,11 +28,11 @@ class root.ConstOrNotModel extends Model
         super()
                 
         # default
-        @add_attr
-            bool : bool
+        @add_attr {
+            bool: bool
             model: model
-            check_disabled : check_disabled
-                
+            check_disabled: check_disabled
+        }
     get: ->
         @model?.get()
         

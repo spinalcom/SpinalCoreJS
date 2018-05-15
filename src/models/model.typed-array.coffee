@@ -24,7 +24,7 @@
 root = if typeof _root_obj == "undefined" then global else window
 
 class root.TypedArray extends Model
-    # size can be 
+    # size can be
     #  - a number
     #  - a list of number
     constructor: ( size, data ) ->
@@ -36,7 +36,7 @@ class root.TypedArray extends Model
         if not size.length
             size = [ size ]
         @_size = size
-        
+
         # data
         if not data?
             B = @base_type()
@@ -54,19 +54,19 @@ class root.TypedArray extends Model
             @_size[ d ]
         else
             @_size
-        
+
     set_val: ( index, value ) ->
         index = @_get_index index
         if @_data[ index ] != value
             @_data[ index ] = value
             @_signal_change()
-        
+
     nb_items: ->
         tot = @_size[ 0 ] or 0
         for i in @_size[ 1 ... ]
             tot *= i
         tot
-        
+
     toString: ->
         m = 1
         res = ""
@@ -92,7 +92,7 @@ class root.TypedArray extends Model
             return @_data == obj._data
         return @_data == obj
 
-    get: ( index )->
+    get: ( index ) ->
         if index?
             @_data[ @_get_index index ]
         else
@@ -102,7 +102,7 @@ class root.TypedArray extends Model
         tot = 1
         for s in new_size
             tot *= s
-            
+
         B = @base_type()
         n = new B tot
         n.set @_data
@@ -110,21 +110,21 @@ class root.TypedArray extends Model
         @_size = new_size
         @_signal_change()
         
-            
+
     _set: ( str ) ->
         if typeof( str ) == "string"
             # TODO optimize
             @_set_state str, {}
             return true
-            
-        if @_data != value or @_size.length != 1 or @_size[ 0 ] != value.length
+
+        if @_data != str or @_size.length != 1 or @_size[ 0 ] != str.length
             B = @base_type()
-            @_data = new B value
-            @_size = [ value.length ]
+            @_data = new B str
+            @_size = [ str.length ]
             return true
         return false
-        
-            
+
+
     _get_index: ( index ) ->
         if index.length
             o = 0
@@ -138,7 +138,7 @@ class root.TypedArray extends Model
     _get_fs_data: ( out ) ->
         FileSystem.set_server_id_if_necessary out, this
         out.mod += "C #{@_server_id} #{@_get_state()} "
-            
+
     _get_state: ->
         res = ""
         res += @_size.length
@@ -153,11 +153,9 @@ class root.TypedArray extends Model
         s = parseInt l[ 0 ]
         @_size = for v in [ 0 ... s ]
             parseInt l[ v + 1 ]
-            
+
         B = @base_type()
         n = @nb_items()
         @_data = new B n
         for v in [ 0 ... n ]
             @_data[ v ] = parseFloat l[ s + 1 + v ]
-            
-            
