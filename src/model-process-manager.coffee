@@ -85,12 +85,13 @@ class root.ModelProcessManager
 
     # return the type of obj
     @get_object_class: ( obj ) ->
-        if obj and obj.constructor and obj.constructor.toString
-            arr = obj.constructor.toString().match ///function\s*(\w+)///
-            if (!arr)
-                arr = obj.constructor.toString().match ///class\s*(\w+)///
-            if arr and arr.length == 2
-                return arr[ 1 ]
+        if obj and obj.constructor
+        # and obj.constructor.toString
+            if obj.constructor.name
+                return obj.constructor.name
+            # arr = obj.constructor.toString().match ///(class|function)\s*(\w+)///
+            # if arr and arr.length == 2
+            #     return arr[ 1 ]
 
     @_get_attribute_names: ( m ) ->
         if m instanceof Model
