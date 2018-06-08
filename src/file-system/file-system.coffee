@@ -189,7 +189,8 @@ class root.FileSystem
                         _obj._server_id = sid
                         FileSystem._objects[ sid ] = _obj
                         for c in FileSystem._type_callbacks
-                            if _obj instanceof root[c[0]]
+                            mod_R = root[c[0]] || spinalCore._def[c[0]]
+                            if _obj instanceof mod_R
                                 c[1] _obj
 
                 FileSystem._sig_server = false
@@ -301,7 +302,8 @@ class root.FileSystem
             FileSystem._objects_to_send[ m.model_id ] = m
             if FileSystem._timer_chan?
                 clearTimeout FileSystem._timer_chan
-            FileSystem._timer_chan = setTimeout FileSystem._timeout_chan_func, 250
+            FileSystem._timer_chan = setTimeout FileSystem._timeout_chan_func, 100
+            # FileSystem._timer_chan = setTimeout FileSystem._timeout_chan_func, 250
 
     #
     @_tmp_id_to_real: ( tmp_id, res ) ->
@@ -351,6 +353,8 @@ class root.FileSystem
     @_create_model_by_name: (name) ->
       if (typeof name != "string")
         return name; # for old spinalcore version
+      if (typeof spinalCore._def[name] != 'undefined')
+        return new spinalCore._def[name]()
       if (typeof root[name] == 'undefined')
         root[name] =  new Function("return function #{name} (){#{name}.super(this);}")()
         FileSystem.extend(root[name], Model)
@@ -448,7 +452,8 @@ class root.FileSystem
                             _obj._server_id = sid
                             FileSystem._objects[ sid ] = _obj
                             for c in FileSystem._type_callbacks
-                                if _obj instanceof root[c[0]]
+                                mod_R = root[c[0]] || spinalCore._def[c[0]]
+                                if _obj instanceof mod_R
                                     c[1] _obj
 
                     FileSystem._sig_server = false
